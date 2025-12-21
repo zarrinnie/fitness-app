@@ -11,29 +11,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartFit">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.SmartFit">
-        </activity>
-        <activity
-            android:name=".RegisterProfile"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.SmartFit">
-        </activity>
+            android:theme="@style/Theme.SmartFit" />
+
         <activity
             android:name=".Register"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.SmartFit">
+
+            <!-- MAKE THIS THE FIRST SCREEN -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-    </application>
 
+        </activity>
+
+        <activity
+            android:name=".RegisterProfile"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.SmartFit" />
+
+    </application>
 </manifest>

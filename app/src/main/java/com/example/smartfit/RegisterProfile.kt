@@ -8,27 +8,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.smartfit.ui.theme.SmartFitTheme
 import java.util.Calendar
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
-
 
 
 class RegisterProfile : ComponentActivity() {
@@ -59,6 +60,10 @@ fun CompleteProfileScreen() {
     var dateOfBirth by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
+    var isWeightError by remember { mutableStateOf(false) }
+    var isHeightError by remember { mutableStateOf(false) }
+    var showErrorMessage by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -68,6 +73,7 @@ fun CompleteProfileScreen() {
         context,
         { _, year, month, day ->
             dateOfBirth = "$day/${month + 1}/$year"
+            showErrorMessage = false
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -82,17 +88,20 @@ fun CompleteProfileScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Image(
                 painter = painterResource(id = R.drawable.register_page_2),
                 contentDescription = "Profile Illustration",
-                modifier = Modifier.height(200.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "Let's complete your profile",
@@ -106,7 +115,7 @@ fun CompleteProfileScreen() {
                 color = Color.Gray
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
 
             // -----------------------------------------
@@ -120,7 +129,7 @@ fun CompleteProfileScreen() {
                     value = gender,
                     onValueChange = { },
                     readOnly = true,
-                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Gender") },
+                    leadingIcon = { Icon(Icons.Filled.Person, contentDescription = "Gender") },
                     label = { Text("Choose Gender") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
                     modifier = Modifier
@@ -131,7 +140,9 @@ fun CompleteProfileScreen() {
                         unfocusedBorderColor = Color.Transparent,
                         focusedBorderColor = Color.Transparent,
                         unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White
+                        focusedContainerColor = Color.White,
+                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
                 ExposedDropdownMenu(
@@ -144,6 +155,7 @@ fun CompleteProfileScreen() {
                             onClick = {
                                 gender = it
                                 genderExpanded = false
+                                showErrorMessage = false
                             }
                         )
                     }
@@ -156,23 +168,30 @@ fun CompleteProfileScreen() {
             // -----------------------------------------
             // DATE PICKER (TAP FIELD TO OPEN)
             // -----------------------------------------
-            OutlinedTextField(
-                value = dateOfBirth,
-                onValueChange = { },
-                readOnly = true,
-                label = { Text("Date of Birth") },
-                leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = "Date") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { datePicker.show() },
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
+            Box {
+                OutlinedTextField(
+                    value = dateOfBirth,
+                    onValueChange = { },
+                    enabled = false,
+                    label = { Text("Date of Birth") },
+                    leadingIcon = { Icon(Icons.Filled.DateRange, contentDescription = "Date") },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledContainerColor = Color.White,
+                        disabledBorderColor = Color.Transparent,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 )
-            )
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { datePicker.show() }
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -184,11 +203,15 @@ fun CompleteProfileScreen() {
 
                 OutlinedTextField(
                     value = weight,
-                    onValueChange = { weight = it },
+                    onValueChange = {
+                        weight = it
+                        isWeightError = it.any { char -> !char.isDigit() }
+                        showErrorMessage = false
+                    },
                     label = { Text("Your Weight") },
                     leadingIcon = {
                         Icon(
-                            Icons.Default.MonitorWeight,
+                            Icons.Filled.MonitorWeight,
                             contentDescription = "Weight"
                         )
                     },
@@ -198,9 +221,22 @@ fun CompleteProfileScreen() {
                         unfocusedBorderColor = Color.Transparent,
                         focusedBorderColor = Color.Transparent,
                         unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White
+                        focusedContainerColor = Color.White,
+                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        errorContainerColor = Color.White,
+                        errorLeadingIconColor = MaterialTheme.colorScheme.error
                     ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = isWeightError,
+                    supportingText = {
+                        if (isWeightError) {
+                            Text(
+                                text = "Please enter only numbers",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -231,18 +267,35 @@ fun CompleteProfileScreen() {
 
                 OutlinedTextField(
                     value = height,
-                    onValueChange = { height = it },
+                    onValueChange = {
+                        height = it
+                        isHeightError = it.any { char -> !char.isDigit() }
+                        showErrorMessage = false
+                    },
                     label = { Text("Your Height") },
-                    leadingIcon = { Icon(Icons.Default.Straighten, contentDescription = "Height") },
+                    leadingIcon = { Icon(Icons.Filled.Straighten, contentDescription = "Height") },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.Transparent,
                         focusedBorderColor = Color.Transparent,
                         unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White
+                        focusedContainerColor = Color.White,
+                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        errorContainerColor = Color.White,
+                        errorLeadingIconColor = MaterialTheme.colorScheme.error
                     ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = isHeightError,
+                    supportingText = {
+                        if (isHeightError) {
+                            Text(
+                                text = "Please enter only numbers",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -266,12 +319,23 @@ fun CompleteProfileScreen() {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            if (showErrorMessage) {
+                Text(
+                    text = "Please fill in all fields correctly",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
 
-            // -----------------------------------------
-            // NEXT BUTTON
-            // -----------------------------------------
             Button(
-                onClick = { /* handle next */ },
+                onClick = {
+                    if (gender.isBlank() || dateOfBirth.isBlank() || weight.isBlank() || height.isBlank() || isWeightError || isHeightError) {
+                        showErrorMessage = true
+                    } else {
+                        showErrorMessage = false
+                        // Handle next
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -297,7 +361,7 @@ fun CompleteProfileScreen() {
                             color = Color.White,
                             fontSize = 18.sp
                         )
-                        Icon(Icons.Default.ArrowForward, contentDescription = "Next", tint = Color.White)
+                        Icon(Icons.Filled.ArrowForward, contentDescription = "Next", tint = Color.White)
                     }
                 }
             }

@@ -75,7 +75,7 @@ fun RegisterScreen() {
             )
             Text(
                 text = "Create an Account",
-                fontSize = 20.sp,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )

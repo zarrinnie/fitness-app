@@ -1,6 +1,7 @@
 package com.example.smartfit
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -333,7 +334,8 @@ fun CompleteProfileScreen() {
                         showErrorMessage = true
                     } else {
                         showErrorMessage = false
-                        // Handle next
+                        val intent = Intent(context, Register3::class.java)
+                        context.startActivity(intent)
                     }
                 },
                 modifier = Modifier

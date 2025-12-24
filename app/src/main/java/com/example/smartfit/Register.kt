@@ -1,5 +1,6 @@
 package com.example.smartfit
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,12 +13,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +58,8 @@ fun RegisterScreen() {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -141,7 +147,15 @@ fun RegisterScreen() {
                 label = { Text("Password") },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
 
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(image, "toggle password visibility")
+                    }
+                },
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color.Transparent,
@@ -177,7 +191,10 @@ fun RegisterScreen() {
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { /* Handle registration */ },
+                onClick = { 
+                    val intent = Intent(context, RegisterProfile::class.java)
+                    context.startActivity(intent)
+                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -191,7 +208,7 @@ fun RegisterScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            brush = Brush.horizontalGradient(
+                            Brush.horizontalGradient(
                                 colors = listOf(Color(0xFF92A3FD), Color(0xFF9DCEFF))
                             )
                         ),

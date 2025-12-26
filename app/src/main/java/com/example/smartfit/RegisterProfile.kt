@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.smartfit.onboarding.OnBoardingScreen
 import com.example.smartfit.ui.theme.SmartFitTheme
 import java.util.Calendar
 
@@ -334,8 +335,9 @@ fun CompleteProfileScreen() {
                         showErrorMessage = true
                     } else {
                         showErrorMessage = false
-                        val intent = Intent(context, Register3::class.java)
+                        val intent = Intent(context, Register::class.java)
                         context.startActivity(intent)
+
                     }
                 },
                 modifier = Modifier

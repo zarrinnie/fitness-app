@@ -29,8 +29,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.smartfit.ui.theme.SmartFitTheme
-import com.example.smartfit.MainActivity
 
+class Register3 : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            SmartFitTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White
+                ) {
+                    Register3Screen()
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun Register3Screen() {
@@ -113,7 +127,7 @@ fun Register3Screen() {
         Button(
             onClick = {
                 context.startActivity(
-                    Intent(context, MainActivity::class.java)
+                    Intent(context, LoginScreen::class.java)
                 )
             },
             modifier = Modifier

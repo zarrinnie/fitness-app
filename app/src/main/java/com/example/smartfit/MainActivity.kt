@@ -3,54 +3,45 @@ package com.example.smartfit
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.smartfit.onboarding.OnBoardingScreen
-import com.example.smartfit.onboarding.WelcomeScreen
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.smartfit.ui.theme.SmartFitTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             SmartFitTheme {
-                SmartFitNav()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun SmartFitNav() {
-    val navController = rememberNavController()
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
 
-    NavHost(
-        navController = navController,
-        startDestination = "welcome"
-    ) {
-
-        composable("welcome") {
-            WelcomeScreen(
-                onGetStartedClick = {
-                    navController.navigate("onboarding")
-                }
-            )
-        }
-
-        composable("onboarding") {
-            OnBoardingScreen(
-                onFinish = {
-                    navController.navigate("register") {
-                        popUpTo("welcome") { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        composable("register") {
-            RegisterScreen()
-        }
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    SmartFitTheme {
+        Greeting("Android")
     }
 }
